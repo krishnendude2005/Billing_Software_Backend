@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse add(CategoryRequest categoryRequest) {
         Category newCategory = convertToEntity(categoryRequest);
         newCategory = categoryRepo.save(newCategory);
-        
+
         return convertToResponse(newCategory);
     }
 
@@ -33,6 +33,12 @@ public class CategoryServiceImpl implements CategoryService {
                         .stream()
                         .map(category -> convertToResponse(category))
                         .collect(Collectors.toList());
+    }
+
+    @Override
+    public void delete(String categoryId) {
+        Category existingCategory = categoryRepo.findByCategoryId(categoryId).orElseThrow(() -> new RuntimeException("Category not found : " + categoryId));
+        categoryRepo.delete(existingCategory);
     }
 
     private CategoryResponse convertToResponse(Category newCategory) {

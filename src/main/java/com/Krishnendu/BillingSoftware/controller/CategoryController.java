@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,13 +23,13 @@ public class CategoryController {
 
         CategoryResponse response = categoryService.add(categoryRequest);
 
-        if(response.getCategoryId()==null){
+        if (response.getCategoryId() == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(response);
         }
 
-        return  ResponseEntity
+        return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
@@ -37,14 +38,28 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponse>> read() {
         List<CategoryResponse> response = categoryService.read();
 
-        if(response==null){
+        if (response == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(response);
         }
 
-        return  ResponseEntity
+        return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
+    }
+
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<?> deleteCategory(@PathVariable String categoryId) {
+        try {
+            categoryService.delete(categoryId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+
+        return
+                ResponseEntity
+                        .status(HttpStatus.NO_CONTENT)
+                        .body(null);
     }
 }
