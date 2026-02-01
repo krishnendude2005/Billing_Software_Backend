@@ -21,8 +21,8 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> addCategory(@RequestPart String categoryRequestString,
-                                                        @RequestPart MultipartFile file
+    public ResponseEntity<CategoryResponse> addCategory(@RequestPart("category") String categoryRequestString,
+                                                        @RequestPart("file") MultipartFile file
                                                         ) {
 
         // map the incoming string as the category request
@@ -30,7 +30,7 @@ public class CategoryController {
 
         CategoryRequest categoryRequest = null;
         try {
-            categoryRequest = mapper.convertValue(file, CategoryRequest.class);
+            categoryRequest = mapper.readValue(categoryRequestString, CategoryRequest.class);
             CategoryResponse response = categoryService.add(categoryRequest, file);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
