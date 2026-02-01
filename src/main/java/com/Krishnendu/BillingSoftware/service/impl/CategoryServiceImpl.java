@@ -5,8 +5,10 @@ import com.Krishnendu.BillingSoftware.io.CategoryRequest;
 import com.Krishnendu.BillingSoftware.io.CategoryResponse;
 import com.Krishnendu.BillingSoftware.repository.CategoryRepo;
 import com.Krishnendu.BillingSoftware.service.CategoryService;
+import com.Krishnendu.BillingSoftware.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,12 +19,17 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepo categoryRepo;
+    private final FileUploadService fileUploadService;
 
     @Override
-    public CategoryResponse add(CategoryRequest categoryRequest) {
-        Category newCategory = convertToEntity(categoryRequest);
-        newCategory = categoryRepo.save(newCategory);
+    public CategoryResponse add(CategoryRequest categoryRequest, MultipartFile file) {
 
+        String imgUrl = fileUploadService.uploadFile(file);
+
+        Category newCategory = convertToEntity(categoryRequest);
+        newCategory.setImageUrl(imgUrl);
+
+        newCategory = categoryRepo.save(newCategory);
         return convertToResponse(newCategory);
     }
 
@@ -37,8 +44,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(String categoryId) {
+        // delete from DB
         Category existingCategory = categoryRepo.findByCategoryId(categoryId).orElseThrow(() -> new RuntimeException("Category not found : " + categoryId));
         categoryRepo.delete(existingCategory);
+
+        // delete from S3 also
+        Boolean ans = fileUploadService.deleteFile(existingCategory.getImageUrl());
+        if(ans) {
+            System.out.println("Delete file successfully");
+        }
     }
 
     private CategoryResponse convertToResponse(Category newCategory) {

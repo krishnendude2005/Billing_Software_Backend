@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -19,19 +21,25 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> addCategory(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<CategoryResponse> addCategory(@RequestPart String categoryRequestString,
+                                                        @RequestPart MultipartFile file
+                                                        ) {
 
-        CategoryResponse response = categoryService.add(categoryRequest);
+        // map the incoming string as the category request
+        ObjectMapper mapper = new ObjectMapper();
 
-        if (response.getCategoryId() == null) {
+        CategoryRequest categoryRequest = null;
+        try {
+            categoryRequest = mapper.convertValue(file, CategoryRequest.class);
+            CategoryResponse response = categoryService.add(categoryRequest, file);
             return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
+                    .status(HttpStatus.CREATED)
                     .body(response);
+
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while parsing incoming request string as the request object" + e.getMessage());
         }
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
     }
 
     @GetMapping
