@@ -24,6 +24,8 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Value("${aws.bucket.name}")
     private String bucketName;
+    @Value("${aws.region}")
+    private String region;
 
     private final S3Client s3Client;
 
@@ -43,7 +45,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             PutObjectResponse response = s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
             if(response.sdkHttpResponse().isSuccessful()) {
-                String url = "https://" + bucketName + ".amazonaws.com/" + key;
+                String url = "https://" + bucketName + ".s3." + region +".amazonaws.com/" + key;
                 return url;
             } else {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while uploading the image");
