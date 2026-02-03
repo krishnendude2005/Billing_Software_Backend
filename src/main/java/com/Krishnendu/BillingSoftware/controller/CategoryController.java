@@ -15,14 +15,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @PostMapping
+    @PostMapping("/admin/categories")
     public ResponseEntity<CategoryResponse> addCategory(@RequestPart("category") String categoryRequestString,
                                                         @RequestPart("file") MultipartFile file
                                                         ) {
@@ -59,7 +57,7 @@ public class CategoryController {
                 .body(response);
     }
 
-    @DeleteMapping("/{categoryId}")
+    @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<?> deleteCategory(@PathVariable String categoryId) {
         try {
             categoryService.delete(categoryId);
