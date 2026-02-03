@@ -3,13 +3,14 @@ package com.Krishnendu.BillingSoftware.controller;
 import com.Krishnendu.BillingSoftware.io.CategoryRequest;
 import com.Krishnendu.BillingSoftware.io.CategoryResponse;
 import com.Krishnendu.BillingSoftware.service.CategoryService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class CategoryController {
                     .status(HttpStatus.CREATED)
                     .body(response);
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while parsing incoming request string as the request object" + e.getMessage());
         }
 
