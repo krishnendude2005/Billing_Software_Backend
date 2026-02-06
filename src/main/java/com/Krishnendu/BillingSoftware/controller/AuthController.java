@@ -3,6 +3,8 @@ package com.Krishnendu.BillingSoftware.controller;
 import com.Krishnendu.BillingSoftware.io.AuthRequest;
 import com.Krishnendu.BillingSoftware.io.AuthResponse;
 import com.Krishnendu.BillingSoftware.service.impl.AppUserDetailsService;
+import com.Krishnendu.BillingSoftware.service.impl.AuthServiceImpl;
+import com.Krishnendu.BillingSoftware.utils.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +28,8 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final AppUserDetailsService appUserDetailsService;
+    private final AuthServiceImpl authService;
+    private final JWTUtils jwtUtils;
 
     // Endpoint to encode the password
     @PostMapping("/encode")
@@ -49,12 +53,14 @@ public class AuthController {
         final UserDetails userDetails = appUserDetailsService.loadUserByUsername(request.getEmail());
 
 
+        String JWTToken = jwtUtils.generateJWTToken(userDetails);
 
 
-         return  null;
+        //TODO: fetch the role from repo
+        return new AuthResponse(request.getEmail(), "USER", JWTToken);
     }
 
-    private void authenticate(String email, String password) throws Exception{
+    private void authenticate(String email, String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (DisabledException e) {
