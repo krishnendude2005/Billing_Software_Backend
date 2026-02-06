@@ -7,11 +7,14 @@ import com.Krishnendu.BillingSoftware.repository.UserEntityRepo;
 import com.Krishnendu.BillingSoftware.service.UserService;
 import jdk.jfr.Registered;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,16 +62,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getUserRole(String email) {
-        return "";
+        UserEntity existingUser = userEntityRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        return existingUser.getRole();
     }
 
     @Override
     public List<UserResponse> readAllUsers() {
-        return List.of();
+        return userEntityRepo.findAll()
+                .stream()
+                .map(user -> convertToResponse(user))
+                .collect(Collectors.toList());
     }
 
     @Override
     public void deleteUser(String id) {
+        UserEntity existingUser = userEntityRepo.findByUserId(id).orElseThrow(() -> new UsernameNotFoundException(id));
 
+        if(existingUser.getRole().equals("ADMIN")){
+            throw new IllegalStateException("Admin Cannot be deleted");
+        }
+
+        userEntityRepo.delete(existingUser);
     }
 }
