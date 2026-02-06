@@ -2,6 +2,7 @@ package com.Krishnendu.BillingSoftware.controller;
 
 import com.Krishnendu.BillingSoftware.io.AuthRequest;
 import com.Krishnendu.BillingSoftware.io.AuthResponse;
+import com.Krishnendu.BillingSoftware.service.UserService;
 import com.Krishnendu.BillingSoftware.service.impl.AppUserDetailsService;
 import com.Krishnendu.BillingSoftware.service.impl.AuthServiceImpl;
 import com.Krishnendu.BillingSoftware.utils.JWTUtils;
@@ -28,8 +29,8 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final AppUserDetailsService appUserDetailsService;
-    private final AuthServiceImpl authService;
     private final JWTUtils jwtUtils;
+    private final UserService userService;
 
     // Endpoint to encode the password
     @PostMapping("/encode")
@@ -56,8 +57,8 @@ public class AuthController {
         String JWTToken = jwtUtils.generateJWTToken(userDetails);
 
 
-        //TODO: fetch the role from repo
-        return new AuthResponse(request.getEmail(), "USER", JWTToken);
+        String userRole = userService.getUserRole(request.getEmail());
+        return new AuthResponse(request.getEmail(), userRole, JWTToken);
     }
 
     private void authenticate(String email, String password) throws Exception {
