@@ -64,7 +64,7 @@ public class JWTUtils {
 
             String subject = claims.getSubject();
 
-            if (!userDetails.getUsername().equals(subject) || claims.getExpiration().before(new Date())) {
+            if (!userDetails.getUsername().equals(subject) && !isTokenExpired(token)) {
                 return false;
             }
         } catch (JwtException | IllegalArgumentException e) {
