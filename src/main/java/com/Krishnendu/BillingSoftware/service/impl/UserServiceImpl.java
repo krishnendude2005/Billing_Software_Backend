@@ -7,9 +7,11 @@ import com.Krishnendu.BillingSoftware.repository.UserEntityRepo;
 import com.Krishnendu.BillingSoftware.service.UserService;
 import jdk.jfr.Registered;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private UserEntityRepo userEntityRepo;
-    private PasswordEncoder passwordEncoder;
+    private final UserEntityRepo userEntityRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse createUser(UserRequest request) {
@@ -68,10 +70,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> readAllUsers() {
-        return userEntityRepo.findAll()
-                .stream()
-                .map(user -> convertToResponse(user))
-                .collect(Collectors.toList());
+       List<UserEntity> users = userEntityRepo.findAll();
+       if(users.isEmpty()){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No users found");
+       }
+
+       return users.stream()
+               .map(user -> convertToResponse(user))
+               .collect(Collectors.toList());
     }
 
     @Override
