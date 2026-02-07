@@ -4,7 +4,6 @@ import com.Krishnendu.BillingSoftware.io.AuthRequest;
 import com.Krishnendu.BillingSoftware.io.AuthResponse;
 import com.Krishnendu.BillingSoftware.service.UserService;
 import com.Krishnendu.BillingSoftware.service.impl.AppUserDetailsService;
-import com.Krishnendu.BillingSoftware.service.impl.AuthServiceImpl;
 import com.Krishnendu.BillingSoftware.utils.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.AuthProvider;
 import java.util.Map;
 
 @RestController
