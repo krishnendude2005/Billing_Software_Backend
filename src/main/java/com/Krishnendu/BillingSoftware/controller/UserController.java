@@ -18,7 +18,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/admin/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRequest user) {
 
         try{
@@ -41,7 +41,7 @@ public class UserController {
                ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/admin/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
