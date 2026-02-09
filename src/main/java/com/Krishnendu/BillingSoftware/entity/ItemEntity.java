@@ -38,6 +38,6 @@ public class ItemEntity {
     private String imageUrl;
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @OnDelete(action = OnDeleteAction.RESTRICT) // This is used to prevent the deletion of category table whenever an item is deleted
     private Category category;
 }
