@@ -42,7 +42,7 @@ public class CategoryController {
 
     }
 
-    @GetMapping
+    @GetMapping("/categories")
     public ResponseEntity<List<CategoryResponse>> read() {
         List<CategoryResponse> response = categoryService.read();
 
