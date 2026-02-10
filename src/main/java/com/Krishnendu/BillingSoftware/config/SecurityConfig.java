@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,11 +31,11 @@ public class SecurityConfig {
     private final JWTFilter jwtFilter;
 
     @Bean
-    public CorsFilter corsFilter() {
-        return new CorsFilter(corsConfigurationSource());
-    }
+//    public CorsFilter corsFilter() {
+//        return new CorsFilter(corsConfigurationSource());
+//    }
 
-    private UrlBasedCorsConfigurationSource corsConfigurationSource() {
+    public  UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of("http://localhost:5173"));
@@ -51,6 +52,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return
                 http
+                        .cors(Customizer.withDefaults())
                         .csrf(AbstractHttpConfigurer::disable)
                         .authorizeHttpRequests(auth ->
                                 auth
