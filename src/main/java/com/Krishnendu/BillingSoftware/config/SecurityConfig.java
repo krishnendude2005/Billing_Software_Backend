@@ -57,7 +57,7 @@ public class SecurityConfig {
                         .authorizeHttpRequests(auth ->
                                 auth
                                         .requestMatchers("/login","/encode").permitAll()
-                                        .requestMatchers("/categories", "/items").hasAnyRole("USER", "ADMIN") // here USER = shop owner
+                                        .requestMatchers("/categories", "/items", "/orders").hasAnyRole("USER", "ADMIN") // here USER = shop owner
                                         .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                                         .anyRequest().authenticated()
                         )
