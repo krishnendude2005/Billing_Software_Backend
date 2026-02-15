@@ -21,6 +21,6 @@ public class OrderItemEntity {
     @Column(unique = true)
     private String itemId;
     private String itemName;
-    private String itemPrice;
-    private String itemQuantity;
+    private Double itemPrice;
+    private Integer itemQuantity;
 }
