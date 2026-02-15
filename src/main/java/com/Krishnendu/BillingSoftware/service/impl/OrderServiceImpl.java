@@ -2,10 +2,7 @@ package com.Krishnendu.BillingSoftware.service.impl;
 
 import com.Krishnendu.BillingSoftware.entity.OrderEntity;
 import com.Krishnendu.BillingSoftware.entity.OrderItemEntity;
-import com.Krishnendu.BillingSoftware.io.OrderRequest;
-import com.Krishnendu.BillingSoftware.io.OrderResponse;
-import com.Krishnendu.BillingSoftware.io.PaymentDetails;
-import com.Krishnendu.BillingSoftware.io.PaymentMethod;
+import com.Krishnendu.BillingSoftware.io.*;
 import com.Krishnendu.BillingSoftware.repository.OrderEntityRepo;
 import com.Krishnendu.BillingSoftware.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -113,5 +110,33 @@ public class OrderServiceImpl implements OrderService {
         return orderRepo.findAllByOrderByCreatedAtDesc().stream()
                 .map(this::convertToOrderResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderResponse verifyPayment(PaymentVerificationRequest request) {
+        OrderEntity existingOrder = orderRepo.findByOrderId(request.getOrderId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        if (!verifyRazorpaySignature(request.getRazorpayOrderId(),
+                request.getRazorpayPaymentId(),
+                request.getRazorpaySignature())) {
+
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Razorpay Signature");
+
+        }
+
+        PaymentDetails paymentDetails = existingOrder.getPaymentDetails();
+        paymentDetails.setRazorpayOrderId(request.getOrderId());
+        paymentDetails.setRazorpayPaymentId(request.getRazorpayPaymentId());
+        paymentDetails.setRazorpaySignature(request.getRazorpaySignature());
+        paymentDetails.setStatus(PaymentDetails.PaymentStatus.COMPLETED);
+
+
+        existingOrder = orderRepo.save(existingOrder);
+        return convertToOrderResponse(existingOrder);
+
+    }
+
+    private boolean verifyRazorpaySignature(String razorpayOrderId, String razorpayPaymentId, String razorpaySignature) {
+        return true;
     }
 }

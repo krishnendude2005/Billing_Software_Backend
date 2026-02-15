@@ -1,6 +1,7 @@
 package com.Krishnendu.BillingSoftware.controller;
 
 import com.Krishnendu.BillingSoftware.io.PaymentRequest;
+import com.Krishnendu.BillingSoftware.io.PaymentVerificationRequest;
 import com.Krishnendu.BillingSoftware.io.RazorpayOrderResponse;
 import com.Krishnendu.BillingSoftware.service.impl.OrderServiceImpl;
 import com.Krishnendu.BillingSoftware.service.impl.RazorpayServiceImpl;
@@ -27,6 +28,13 @@ public class PaymentController {
                 .status(HttpStatus.CREATED)
                 .body(razorpayService.createOrder(paymentRequest.getAmount(), paymentRequest.getCurrency()));
 
+
+    }
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyPayment(@RequestBody PaymentVerificationRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(orderService.verifyPayment(request));
 
     }
 }
