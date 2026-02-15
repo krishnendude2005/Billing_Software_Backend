@@ -1,6 +1,8 @@
 package com.Krishnendu.BillingSoftware.entity;
 
 
+import com.Krishnendu.BillingSoftware.io.PaymentDetails;
+import com.Krishnendu.BillingSoftware.io.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +36,11 @@ public class OrderEntity {
     @JoinColumn(name = "order_id")
     private List<OrderItemEntity> orderItems =  new ArrayList<>();
 
+    @Embedded
+    private PaymentDetails paymentDetails;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     // Used for generating the order ID
     @PrePersist
