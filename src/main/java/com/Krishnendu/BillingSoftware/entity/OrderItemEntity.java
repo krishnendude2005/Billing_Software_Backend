@@ -1,0 +1,26 @@
+package com.Krishnendu.BillingSoftware.entity;
+
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "tbl_order_items")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
+public class OrderItemEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
+    private String itemId;
+    private String itemName;
+    private String itemPrice;
+    private String itemQuantity;
+}
