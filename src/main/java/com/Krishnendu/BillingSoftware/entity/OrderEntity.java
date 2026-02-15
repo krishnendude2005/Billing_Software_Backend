@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_orders")
@@ -27,6 +29,11 @@ public class OrderEntity {
     private Double tax;
     private Double grandTotal;
     private LocalDateTime createdAt;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "order_id")
+    private List<OrderItemEntity> orderItems =  new ArrayList<>();
+
 
     // Used for generating the order ID
     @PrePersist
