@@ -180,6 +180,7 @@ public class OrderServiceImpl implements OrderService {
                 .tax(orderEntity.getTax())
                 .grandTotal(orderEntity.getGrandTotal())
                 .paymentMethod(orderEntity.getPaymentMethod())
+                .paymentDetails(orderEntity.getPaymentDetails())
                 .createdAt(orderEntity.getCreatedAt())
                 .build();
     }
