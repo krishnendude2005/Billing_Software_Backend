@@ -33,7 +33,7 @@ public class OrderEntity {
     private LocalDateTime createdAt;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "fk_order_id")
     private List<OrderItemEntity> orderItems =  new ArrayList<>();
 
     @Embedded
