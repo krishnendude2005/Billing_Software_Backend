@@ -6,10 +6,13 @@ import com.Krishnendu.BillingSoftware.io.*;
 import com.Krishnendu.BillingSoftware.repository.OrderEntityRepo;
 import com.Krishnendu.BillingSoftware.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -134,6 +137,51 @@ public class OrderServiceImpl implements OrderService {
         existingOrder = orderRepo.save(existingOrder);
         return convertToOrderResponse(existingOrder);
 
+    }
+
+    @Override
+    public Double sumSalesByDate(LocalDate date) {
+        try {
+            return orderRepo.sumSalesByDate(date);
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to fetch sales for date " + date);
+        }
+    }
+
+    @Override
+    public Long countByOrderDate(LocalDate date) {
+        try {
+            return orderRepo.countByOrderDate(date);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to fetch count for date " + date);
+        }
+    }
+
+
+    @Override
+    public List<OrderResponse> findRecentOrders() {
+        try {
+            Pageable pageable = PageRequest.of(0,5);
+            return orderRepo.findRecentOrders(pageable)
+                    .stream()
+                    .map(orderEntity -> convertToResponse(orderEntity))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to fetch recent orders");
+        }
+    }
+
+    private OrderResponse convertToResponse(OrderEntity orderEntity) {
+        return OrderResponse.builder()
+                .orderId(orderEntity.getOrderId())
+                .customerName(orderEntity.getCustomerName())
+                .phoneNumber(orderEntity.getPhoneNumber())
+                .subTotal(orderEntity.getSubTotal())
+                .tax(orderEntity.getTax())
+                .grandTotal(orderEntity.getGrandTotal())
+                .paymentMethod(orderEntity.getPaymentMethod())
+                .createdAt(orderEntity.getCreatedAt())
+                .build();
     }
 
     private boolean verifyRazorpaySignature(String razorpayOrderId, String razorpayPaymentId, String razorpaySignature) {
