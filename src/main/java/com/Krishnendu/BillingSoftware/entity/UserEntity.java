@@ -24,6 +24,8 @@ public class UserEntity {
     private String userId; // java side user id : UUID
     private String name;
     private String email;
+
+    @Column(length = 255)
     private String password;
     private String role;
     @CreationTimestamp
