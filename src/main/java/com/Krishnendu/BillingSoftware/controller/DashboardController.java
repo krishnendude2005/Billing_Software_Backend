@@ -22,7 +22,7 @@ public class DashboardController {
     @GetMapping
     public ResponseEntity<DashboardResponse> getDashboardData() {
         LocalDate today = LocalDate.now();
-        double salesToday = orderService.sumSalesByDate(today);
+        Double salesToday = orderService.sumSalesByDate(today);
         Long todayOrderCount = orderService.countByOrderDate(today);
         List<OrderResponse> recentOrders = orderService.findRecentOrders();
 

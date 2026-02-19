@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .csrf(AbstractHttpConfigurer::disable)
                         .authorizeHttpRequests(auth ->
                                 auth
-                                        .requestMatchers("/login","/encode").permitAll()
+                                        .requestMatchers("/login","/encode", "/uploads/**").permitAll()
                                         .requestMatchers("/categories", "/items", "/orders", "/payments", "/dashboard").hasAnyRole("USER", "ADMIN") // here USER = shop owner
                                         .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                                         .anyRequest().authenticated()
