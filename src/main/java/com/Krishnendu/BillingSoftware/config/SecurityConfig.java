@@ -5,6 +5,7 @@ import com.Krishnendu.BillingSoftware.service.impl.AppUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -30,21 +31,31 @@ public class SecurityConfig {
     private final AppUserDetailsService appUserDetailsService;
     private final JWTFilter jwtFilter;
 
-    @Bean
+//    @Bean
 //    public CorsFilter corsFilter() {
 //        return new CorsFilter(corsConfigurationSource());
 //    }
 
-    public  UrlBasedCorsConfigurationSource corsConfigurationSource() {
+    @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:5173", "https://*.vercel.app"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-        config.setAllowCredentials(true); // this specifies, we are going to accept the auth credentials with the request
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:5173",
+                "https://*.vercel.app"
+        ));
+
+        config.setAllowedMethods(List.of(
+                "GET","POST","PUT","DELETE","PATCH","OPTIONS"
+        ));
+
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 
@@ -56,6 +67,7 @@ public class SecurityConfig {
                         .csrf(AbstractHttpConfigurer::disable)
                         .authorizeHttpRequests(auth ->
                                 auth
+                                        .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                                         .requestMatchers("/login","/encode", "/uploads/**").permitAll()
                                         .requestMatchers("/categories", "/items", "/orders", "/payments", "/dashboard").hasAnyRole("USER", "ADMIN") // here USER = shop owner
                                         .requestMatchers("/admin/**").hasAnyRole("ADMIN")
