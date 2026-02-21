@@ -60,18 +60,13 @@ public class JWTUtils {
 
     public boolean isValidToken(String token, UserDetails userDetails) {
         try {
-            Claims claims = getClaimsFromToken(token);
+            String subject = getClaimsFromToken(token).getSubject();
 
-            String subject = claims.getSubject();
+            return userDetails.getUsername().equals(subject) && !isTokenExpired(token);
 
-            if (!userDetails.getUsername().equals(subject) && !isTokenExpired(token)) {
-                return false;
-            }
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
-
-        return true;
     }
     public boolean isTokenExpired(String token) {
         return getClaimsFromToken(token).getExpiration().before(new Date());
