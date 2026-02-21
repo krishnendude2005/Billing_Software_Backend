@@ -34,27 +34,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse add(CategoryRequest categoryRequest, MultipartFile file) {
 
-        // String imgUrl = fileUploadService.uploadFile(file); <-----AWS S3---------
-
-        String fileName = UUID.randomUUID().toString() + "." + StringUtils.getFilenameExtension(file.getOriginalFilename());
-        Path uploadPath = Paths.get("uploads").toAbsolutePath().normalize();
         try {
-            Files.createDirectories(uploadPath);
-            Path targetLocation = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            String imgUrl = "http://localhost:8080/api/v1.0/uploads/" + fileName;
-
+            String imgUrl = fileUploadService.uploadFile(file); //<-----AWS S3---------
 
             Category newCategory = convertToEntity(categoryRequest);
             newCategory.setImageUrl(imgUrl);
 
             newCategory = categoryRepo.save(newCategory);
             return convertToResponse(newCategory);
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create directory for uploading files");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to upload image");
         }
-
-
     }
 
     @Override
@@ -68,26 +58,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(String categoryId) {
-        // delete from DB
+
         Category existingCategory = categoryRepo.findByCategoryId(categoryId).orElseThrow(() -> new RuntimeException("Category not found : " + categoryId));
+
+
+        // delete from S3 first
+        Boolean ans = fileUploadService.deleteFile(existingCategory.getImageUrl());
+        if (ans) {
+            System.out.println("Delete file successfully");
+        }
+
+        // delete it from DB second
         categoryRepo.delete(existingCategory);
 
-        // delete from S3 also
-//        Boolean ans = fileUploadService.deleteFile(existingCategory.getImageUrl());
-//        if (ans) {
-//            System.out.println("Delete file successfully");
-//        }
-
-
-        String imgUrl = existingCategory.getImageUrl();
-        String fileName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
-        Path uploadPath = Paths.get("uploads").toAbsolutePath().normalize();
-        Path filePath = uploadPath.resolve(fileName);
-        try {
-            Files.deleteIfExists(filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private CategoryResponse convertToResponse(Category newCategory) {
