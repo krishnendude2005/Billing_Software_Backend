@@ -37,12 +37,8 @@ public class ItemServiceImpl implements ItemService {
         String fileName = UUID.randomUUID().toString() + "." + StringUtils.getFilenameExtension(file.getOriginalFilename());
         Path uploadPath = Paths.get("uploads").toAbsolutePath().normalize();
 
-        //String imgUrl = fileUploadService.uploadFile(file); ------------AWS S3------------
-        try {
-            Files.createDirectories(uploadPath);
-            Path targetLocation = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            String imgUrl = "http://localhost:8080/api/v1.0/uploads/" + fileName;
+        String imgUrl = fileUploadService.uploadFile(file); //------------AWS S3------------
+
             ItemEntity newItem = convertToEntity(request);
             newItem.setImageUrl(imgUrl);
 
@@ -54,11 +50,6 @@ public class ItemServiceImpl implements ItemService {
 
             newItem = itemRepo.save(newItem);
             return convertToResponse(newItem);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload image");
-        }
 
     }
 
@@ -99,26 +90,15 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity existingItem = itemRepo.findByItemId(itemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found with ID :" + itemId));
 
-        //---------AWS S3----------------------------
-//        // 1. Delete the image from AWS
-//        boolean isFileDeleted = fileUploadService.deleteFile(existingItem.getImageUrl());
-//        if (!isFileDeleted) {
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting file from aws");
-//        }
-        //------------------------------------------------
-        String imgUrl = existingItem.getImageUrl();
-        String fileName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
-        Path uploadPath = Paths.get("uploads").toAbsolutePath().normalize();
-        Path filePath = uploadPath.resolve(fileName);
-        try {
-            Files.deleteIfExists(filePath);
+        // 1. Delete the image from AWS
+        boolean isFileDeleted = fileUploadService.deleteFile(existingItem.getImageUrl());
+        if (!isFileDeleted) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting file from aws");
+        }
 
             // 2. Delete the item from DB
             itemRepo.delete(existingItem);
             System.out.println("Item deleted successfully");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-    }
 }
