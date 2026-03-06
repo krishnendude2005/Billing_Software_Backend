@@ -46,7 +46,7 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
-        //Now, generate the jwt token
+        //Now, generate the jwt token .
 
         //get the userDetails from the DB
         final UserDetails userDetails = appUserDetailsService.loadUserByUsername(request.getEmail());
