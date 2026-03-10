@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // DB user id
+    private Long id; // DB user ID
     @Column(unique = true)
     private String userId; // java side user id : UUID
     private String name;
