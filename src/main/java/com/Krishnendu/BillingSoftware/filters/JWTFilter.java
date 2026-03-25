@@ -41,7 +41,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
 
-        // If the current context is not authenticated , then only we set the authentication
+        // If the current context is not authenticated, then only we set the authentication
         if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = appUserDetailsService.loadUserByUsername(email);

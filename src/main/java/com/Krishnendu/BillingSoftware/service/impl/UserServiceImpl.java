@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
         // save the user in the DB
         newUser = userEntityRepo.save(newUser);
 
-        //Convert into response object and return
+        //Convert into a response object and return
         return convertToResponse(newUser);
 
     }
