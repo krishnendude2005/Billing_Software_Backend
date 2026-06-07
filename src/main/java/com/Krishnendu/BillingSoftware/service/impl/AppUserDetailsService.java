@@ -21,6 +21,6 @@ public class AppUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
          UserEntity existingUser = userEntityRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Email not found Email : " + email));
 
-         return new User(existingUser.getEmail(), existingUser.getPassword(), Collections.singleton(new SimpleGrantedAuthority(existingUser.getRole())));
+         return new User(existingUser.getEmail(), existingUser.getPassword(), Collections.singleton(new SimpleGrantedAuthority("ROLE_" + existingUser.getRole())));
     }
 }
