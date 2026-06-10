@@ -45,8 +45,10 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of(
+                "http://localhost:8080",
                 "http://localhost:5173",
-                "https://*.vercel.app"
+                "https://*.vercel.app",
+                "https://billing-software-llatestt.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
@@ -67,6 +69,15 @@ public class SecurityConfig {
                                 auth
                                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                                         .requestMatchers("/login","/encode", "/uploads/**").permitAll()
+                                        .requestMatchers(
+                                                "/swagger-ui.html",
+                                                "/swagger-ui",
+                                                "/swagger-ui/**",
+                                                "/v3/api-docs",
+                                                "/v3/api-docs/**",
+                                                "/swagger-resources/**",
+                                                "/configuration/**"
+                                        ).permitAll()
                                         .requestMatchers("/categories", "/items", "/orders", "/payments", "/dashboard").hasAnyRole("USER", "ADMIN") // here USER = shop owner
                                         .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                                         .anyRequest().authenticated()
