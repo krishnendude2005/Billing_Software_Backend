@@ -13,6 +13,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,5 +68,9 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Invalid email or password");
         }
+    }
+    @GetMapping("/version")
+    public String version() {
+        return "BUILD_JUNE_11_1";
     }
 }
