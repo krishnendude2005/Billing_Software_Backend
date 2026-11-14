@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,8 +26,11 @@ public class CategoryController {
                                                         @RequestPart("file") MultipartFile file
                                                         ) {
 
+
+
         // map the incoming string as the category request
         ObjectMapper mapper = new ObjectMapper();
+
 
         CategoryRequest categoryRequest = null;
         try {
@@ -36,7 +40,8 @@ public class CategoryController {
                     .status(HttpStatus.CREATED)
                     .body(response);
 
-        } catch (IllegalArgumentException | JsonProcessingException e) {
+        }
+        catch (IllegalArgumentException | JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while parsing incoming request string as the request object" + e.getMessage());
         }
 

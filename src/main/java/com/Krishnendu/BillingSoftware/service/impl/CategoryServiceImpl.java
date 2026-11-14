@@ -35,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse add(CategoryRequest categoryRequest, MultipartFile file) {
 
         try {
-            String imgUrl = fileUploadService.uploadFile(file); //<-----AWS S3---------
+            String imgUrl = fileUploadService.uploadFile(file); //<-----AWS S3 / Local ---------
 
             Category newCategory = convertToEntity(categoryRequest);
             newCategory.setImageUrl(imgUrl);
